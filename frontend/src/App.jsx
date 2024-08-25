@@ -1,9 +1,10 @@
 import React from "react"
+import PieChart from "./component/pieChart.jsx";
 
 function App(){
   return(
     <div className="App">
-      <h1 className="bg-blue-600">yoo</h1>
+     <PieChart/>
     
 </div>
   )
