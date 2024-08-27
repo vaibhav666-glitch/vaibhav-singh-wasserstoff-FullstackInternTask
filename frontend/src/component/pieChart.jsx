@@ -125,7 +125,7 @@ import axios from "axios";
             );
           });
           setFilteredData(filtered);
-          console.log(dataChunk.length);
+          //console.log(dataChunk.length);
           setDataChunk(filtered.slice(0,dataChunk.length))
          
         }, [filters]);
