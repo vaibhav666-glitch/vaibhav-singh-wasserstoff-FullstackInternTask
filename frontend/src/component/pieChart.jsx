@@ -8,9 +8,9 @@ import axios from "axios";
     
    
     export default  function PieChart() {
-      // fetching get request from our backend
+      // set screen size mobile responsive
       
-       
+       const [data,setData]=useState([]);
         const svgRef = useRef();
         const [dimensions, setDimensions] = useState({ width: 800, height: 800, radius: 400 });
         const handleResize=()=>{
@@ -22,12 +22,34 @@ import axios from "axios";
           const newRadius=newWidth/2;
           setDimensions({width:newWidth,height:newHeight,radius:newRadius});
         };
+
+//fetch data from backend
+useEffect(()=>{
+  const fetchData=async()=>{
+    try{
+      const response=await axios.get('https://vaibhav-singh-wasserstoff.onrender.com/api/energy/');
+    
+      const val=(response.data);
+    //  console.log(val);
+      setData(val);
+      setDataChunk(val.slice(0,10));
+     
+    }
+    catch(error){
+      console.error("Error fetching data: ", error);
+    }
+  }
+  fetchData();
+},[]);
+//console.log(data);
+
         const [filteredData, setFilteredData] = useState([]);
         const [value,setValue]=useState("intensity");
         const [details,setDetails]=useState({})
         const [highest,setHighest]=useState();
         const [lowest,setLowest]=useState();
-        const[dataChunk,setDataChunk]=useState([]);
+        const [index,setIndex]=useState();
+        const[dataChunk,setDataChunk]=useState(data.slice(0,10));
         const [filters, setFilters] = useState({
           end_year: '',
           topic: '',
@@ -37,23 +59,9 @@ import axios from "axios";
           source: '',
           country: ''
         });
-        const [startIndex, setStartIndex] = useState(0);
+      
        
-//fetch data from backend
-        useEffect(()=>{
-          const fetchData=async()=>{
-            try{
-              const response=await axios.get('https://vaibhav-singh-wasserstoff.onrender.com/api/energy/');
-              const data=response.data;
-              setFilteredData(data);
-              setDataChunk(data.slice(0,10));
-            }
-            catch(error){
-              console.error("Error fetching data: ", error);
-            }
-          }
-          fetchData();
-        },[]);
+
         
         // adjust screen size 
       useEffect(()=>{
@@ -64,7 +72,7 @@ import axios from "axios";
         
       useEffect(() => {
         
-         if(!svgRef.current || dataChunk.length===0)
+         if(data.length===0)
           return ;
 
           setDetails(dataChunk[0]);
@@ -136,7 +144,7 @@ import axios from "axios";
       
         useEffect(() => {
           // Apply filters
-          const filtered = filteredData.filter(item => {
+          const filtered = data.filter(item => {
             return (
               (filters.end_year === '' || item.end_year.toString() === filters.end_year) &&
               (filters.topic === '' || item.topic === filters.topic) &&
@@ -151,7 +159,7 @@ import axios from "axios";
           //console.log(dataChunk.length);
           setDataChunk(filtered.slice(0,dataChunk.length))
          
-        }, [filters]);
+        }, [filters,data]);
       
        //set Filter
         const handleFilterChange =(e)=>{
@@ -183,15 +191,19 @@ import axios from "axios";
            // console.log(data);
       
         setDataChunk(data);
+        
         }
-        // change next data
-        const nextData = () => {
-          const newStartIndex = startIndex + 10;
-          if (newStartIndex < filteredData.length) {
-              setStartIndex(newStartIndex);
-              setDataChunk(filteredData.slice(newStartIndex, newStartIndex + 10));
+
+        const nextVal=()=>{
+          const newIndex=index+10;
+          const nextChunk=filteredData.slice(newIndex,newIndex+10)
+          if(nextChunk.length>0)
+          {
+            setIndex(newIndex+1);
+            setDataChunk(nextChunk)
           }
-      };
+
+    }
       
         return (
           <div className="flex flex-col items-center bg-gray-900 text-white min-h-screen py-10">
@@ -265,14 +277,14 @@ import axios from "axios";
       1000
     </button>
     <button 
-    onClick={()=>nextData()}
-    className="px-8 mx-9 py-5 bg-green-700 hover:bg-green-800 transition-colors text-white rounded-lg shadow-lg">
+    onClick={()=>nextVal()}
+    className="px-24 m-1 py-5 bg-green-700 hover:bg-green-800 transition-colors text-wy">
     Next</button>
   </div>
   
   <div></div>
   
-  <div className="mt-4">
+  <div className="filters mt-4">
     <input
       type="text"
       name="end_year"
