@@ -1,22 +1,24 @@
 import * as d3 from "d3";
 import '../index.css';
 import { useEffect, useRef, useState } from "react";
-//import axios from "axios";
-import data from "../jsonFile/jsondata.json"
+import axios from "axios";
+//import data from "../jsonFile/jsondata.json"
 
 
     
    
     export default  function PieChart() {
-       // const data =await axios.get('http://localhost:3200/api/energy/')
+      // fetching get request from our backend
+      
        
         const svgRef = useRef();
         const [dimensions, setDimensions] = useState({ width: 800, height: 800, radius: 400 });
         const [filteredData, setFilteredData] = useState([]);
         const [value,setValue]=useState("intensity");
         const [details,setDetails]=useState({})
-        const [currentIndex,setCurrentIndex]=useState(0);
-        const[dataChunk,setDataChunk]=useState(data.slice(0,10));
+        const [highest,setHighest]=useState();
+        const [lowest,setLowest]=useState();
+        const[dataChunk,setDataChunk]=useState([]);
         const [filters, setFilters] = useState({
           end_year: '',
           topic: '',
@@ -27,10 +29,30 @@ import data from "../jsonFile/jsondata.json"
           country: ''
         });
       
-        
+        useEffect(() => {
+          const fetchData = async () => {
+            try {
+              const response = await axios.get('https://vaibhav-singh-wasserstoff.onrender.com/api/energy/');
+              const data = response.data;
+              setFilteredData(data);
+             setDataChunk(data.slice(0, 10));
+             
+            } catch (error) {
+              console.error("Error fetching data:", error);
+            }
+          };
+      
+          fetchData();
+        }, []);
         
       
         useEffect(() => {
+          if (!svgRef.current || dataChunk.length === 0) return;
+          
+          setDetails(dataChunk[0]);
+          const max=dataChunk.map(d=>d[value]);
+             setHighest(Math.max(...max));
+             setLowest(Math.min(...max));
           const svg = d3.select(svgRef.current);
           const { width, height, radius } = dimensions;
       
@@ -72,6 +94,7 @@ import data from "../jsonFile/jsondata.json"
             .on('click',function(event, d){
                 console.log(d.data);
                 setDetails(d.data);
+         
             })
 
        
@@ -90,7 +113,7 @@ import data from "../jsonFile/jsondata.json"
       
         useEffect(() => {
           // Apply filters
-          const filtered = data.filter(item => {
+          const filtered = filteredData.filter(item => {
             return (
               (filters.end_year === '' || item.end_year.toString() === filters.end_year) &&
               (filters.topic === '' || item.topic === filters.topic) &&
@@ -104,7 +127,7 @@ import data from "../jsonFile/jsondata.json"
           setFilteredData(filtered);
           console.log(dataChunk.length);
           setDataChunk(filtered.slice(0,dataChunk.length))
-          setCurrentIndex(10);
+         
         }, [filters]);
       
         const handleFilterChange = (e) => {
@@ -127,18 +150,10 @@ import data from "../jsonFile/jsondata.json"
         const changeData=(val)=>{
             //console.log(filteredData)
             console.log(dataChunk.length)
-            let data
-            if(val==11)
-            {
-                const newIndex=currentIndex+10;  
-                console.log(newIndex)              
-                data=filteredData.slice(currentIndex,newIndex);
-            }
-            else{
-                data=filteredData.slice(0,val);  
-            } 
-            
-       
+            let data=filteredData.slice(0,val);  
+          
+            console.log(data);
+      
         setDataChunk(data);
         
         }
@@ -158,10 +173,10 @@ import data from "../jsonFile/jsondata.json"
                 <svg ref={svgRef} className=" rounded-full mr-96 relative" style={{ boxShadow: '0 25px 50px -12px rgb(0 0 0 / 82%)' }}></svg>
                 <ul className="absolute top-[45%] left-[75%] ">
                     <li className="py-1">
-                        <h1 className="px-5 py-1 bg-red-500 text-white rounded">Highest {value}: </h1>
+                        <h1 className="px-5 py-1 bg-red-500 text-white rounded">Highest {value}: {highest} </h1>
                     </li>
                     <li className="py-1">
-                    <h1 className="px-5 py-1 bg-red-500 text-white rounded">Lowest {value}:</h1>
+                    <h1 className="px-5 py-1 bg-red-500 text-white rounded">Lowest {value}: {lowest}</h1>
                     </li>
                 </ul>
             </div>
@@ -175,7 +190,7 @@ import data from "../jsonFile/jsondata.json"
                
            
            
-           <button onClick={()=>changeData(11)} className=" px-9 py-6 bg-green-600 text-white rounded">Next</button>
+          
            
             
             </div>
@@ -238,53 +253,53 @@ import data from "../jsonFile/jsondata.json"
                 className="p-2 m-1 border"
               />
             </div>
-            <div className="p-6 max-w-lg mx-auto bg-white rounded-xl shadow-md space-y-4">
+            <div className=" p-6 max-w-lg mx-auto bg-white rounded-xl shadow-md space-y-4">
   <h1 className="text-xl font-bold mb-4 ">{details.title}</h1>
   <ul className="space-y-2">
     <li>
       <span className="font-semibold">Intensity:</span> {details.intensity}
     </li>
     <li>
-      <span className="font-semibold">Sector:</span> Energy
+      <span className="font-semibold">Sector:</span> {details.sector}
     </li>
     <li>
-      <span className="font-semibold">Topic:</span> Oil
+      <span className="font-semibold">Topic:</span> {details.topic}
     </li>
     <li>
-      <span className="font-semibold">Insight:</span> Annual Energy Outlook
+      <span className="font-semibold">Insight:</span> {details.insight}
     </li>
     <li>
       <span className="font-semibold">URL:</span> 
-      <a href="http://www.eia.gov/outlooks/aeo/pdf/0383(2017).pdf" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
-        http://www.eia.gov/outlooks/aeo/pdf/0383(2017).pdf
+      <a href={details.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+        {details.url}
       </a>
     </li>
     <li>
-      <span className="font-semibold">Region:</span> Northern America
+      <span className="font-semibold">Region:</span> {details.region}
     </li>
     <li>
-      <span className="font-semibold">Country:</span> United States of America
+      <span className="font-semibold">Country:</span> {details.country}
     </li>
     <li>
-      <span className="font-semibold">Relevance:</span> 2
+      <span className="font-semibold">Relevance:</span> {details.relevance}
     </li>
     <li>
-      <span className="font-semibold">PESTLE:</span> Industries
+      <span className="font-semibold">PESTLE:</span> {details.pestle}
     </li>
     <li>
-      <span className="font-semibold">Source:</span> EIA
+      <span className="font-semibold">Source:</span> {details.source}
     </li>
     <li>
-      <span className="font-semibold">Likelihood:</span> 3
+      <span className="font-semibold">Likelihood:</span> {details.likelihood}
     </li>
   </ul>
   <div className="mt-4">
     <h2 className="text-lg font-semibold">Published:</h2>
-    <p className="text-gray-600">January 09, 2017 00:00:00</p>
+    <p className="text-gray-600">{details.published}</p>
   </div>
   <div>
     <h2 className="text-lg font-semibold">Added:</h2>
-    <p className="text-gray-600">January 20, 2017 03:51:24</p>
+    <p className="text-gray-600">{details.added}</p>
   </div>
 </div>
 
