@@ -2,10 +2,11 @@ import * as d3 from "d3";
 import '../index.css';
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import data from "../jsonFile/jsondata.json";
+//import data from "../jsonFile/jsondata.json";
 
 export default function PieChart() {
 
+  const [data, setData] = useState([]);
     const svgRef = useRef();
     const [dimensions, setDimensions] = useState({ width: 800, height: 800, radius: 400 });
     //make mboile responsiveness
@@ -18,6 +19,27 @@ export default function PieChart() {
       const newRadius=newWidth/2;
       setDimensions({width:newWidth,height:newHeight,radius:newRadius});
     };
+
+    //fetch data from backend
+useEffect(()=>{
+  const fetchData=async()=>{
+    try{
+      const response=await axios.get('https://vaibhav-singh-wasserstoff.onrender.com/api/energy/');
+    
+      const val=response.data;
+      console.log(val);
+      setData(val);
+      setFilteredData(val)
+      setDataChunk(data.slice(0, 10));
+      
+     
+    }
+    catch(error){
+      console.error("Error fetching data: ", error);
+    }
+  }
+  fetchData();
+},[]);
 
     const [filteredData, setFilteredData] = useState([]);
     const [value, setValue] = useState("intensity");
