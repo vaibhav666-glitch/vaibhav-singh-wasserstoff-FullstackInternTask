@@ -1,25 +1,15 @@
 import * as d3 from "d3";
 import '../index.css';
 import { useEffect, useRef, useState } from "react";
-import axios from "axios";
-
-const getdata= async ()=>{
-  const response =await axios.get('http://localhost:3200/api/energy/')
-  return response
-}
-
+//import axios from "axios";
+import data from "../jsonFile/jsondata.json"
 
 
     
    
-    export default async function PieChart() {
-        
-       const [data,setData]=useState([])
-
-       useEffect (async()=>{
-        const r=await getdata();
-        setData(r.data)
-       })
+    export default  function PieChart() {
+       // const data =await axios.get('http://localhost:3200/api/energy/')
+       
         const svgRef = useRef();
         const [dimensions, setDimensions] = useState({ width: 800, height: 800, radius: 400 });
         const [filteredData, setFilteredData] = useState([]);
@@ -37,7 +27,6 @@ const getdata= async ()=>{
           country: ''
         });
       
-
         
         
       
