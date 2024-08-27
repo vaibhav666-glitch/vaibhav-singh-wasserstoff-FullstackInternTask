@@ -20,6 +20,7 @@ export default class EnergySectorModel{
     async getData(){
         try{
             const data=await energySectorModel.find();
+            console.log(data);
             return data;
         }
         catch(err){
