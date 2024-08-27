@@ -2,7 +2,7 @@ import express from "express"
 import { connectUsingMongoose } from "./src/config/mongooseConfig.js";
 import bodyParser from "body-parser"
 import cors from "cors"
-import EnergyRouter from "./src/energySector/enrgySector.route.js";
+import EnergyRouter from "./src/feature/energySector/enrgySector.route.js";
 
 const server= express();
 
