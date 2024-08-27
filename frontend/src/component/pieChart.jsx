@@ -1,305 +1,22 @@
 import * as d3 from "d3";
 import '../index.css';
 import { useEffect, useRef, useState } from "react";
+import axios from "axios";
+import data from "../jsonFile/jsondata.json"
 
 
     
    
-    export default function PieChart() {
-        const data = [
+    export default  function PieChart() {
+        
        
-      
-            {
-                "end_year": 2036,
-                "intensity": 18,
-                "sector": "Energy",
-                "topic": "oil",
-                "insight": "Seaways turns elsewhere for submersible support",
-                "url": "http://www.imeche.org/news/news-article/seaways-turns-elsewhere-for-submersible-support",
-                "region": "",
-                "start_year": 2016,
-                "impact": 3,
-                "added": "July, 06 2016 04:00:02",
-                "published": "July, 04 2016 00:00:00",
-                "country": "",
-                "relevance": 3,
-                "pestle": "Industries",
-                "source": "Imeche",
-                "title": "Decommissioning more than 400 oil platforms in the North Sea could cost up to £70 billion over the next 20 years.",
-                "likelihood": 2
-            },
-            {
-                "end_year": "",
-                "intensity": 2,
-                "sector": "",
-                "topic": "",
-                "insight": "Our Planet: The Environmental Dimension of the 2030 Agenda",
-                "url": "http://apps.unep.org/publications/index.php?option=com_pub&task=download&file=012101_en",
-                "region": "Central America",
-                "start_year": "",
-                "impact": "",
-                "added": "July, 06 2016 03:51:54",
-                "published": "May, 13 2016 00:00:00",
-                "country": "Belize",
-                "relevance": 1,
-                "pestle": "",
-                "source": "UNEP",
-                "title": "The Belize barrier reef is under threat from overfishing.",
-                "likelihood": 2
-            },
-            {
-                "end_year": "",
-                "intensity": 2,
-                "sector": "",
-                "topic": "",
-                "insight": "Our Planet: The Environmental Dimension of the 2030 Agenda",
-                "url": "http://apps.unep.org/publications/index.php?option=com_pub&task=download&file=012101_en",
-                "region": "World",
-                "start_year": "",
-                "impact": "",
-                "added": "July, 06 2016 03:51:53",
-                "published": "May, 13 2016 00:00:00",
-                "country": "",
-                "relevance": 1,
-                "pestle": "",
-                "source": "UNEP",
-                "title": "Almost half of all natural World Heritage sites are threatened by harmful industrial activities and operations.",
-                "likelihood": 2
-            },
-            {
-                "end_year": "",
-                "intensity": 2,
-                "sector": "Energy",
-                "topic": "oil",
-                "insight": "Britain's Plummeting Pound Is Bad News for America",
-                "url": "http://foreignpolicy.com/2016/07/05/britains-plummeting-pound-is-bad-news-for-america/",
-                "region": "",
-                "start_year": "",
-                "impact": "",
-                "added": "July, 06 2016 01:54:35",
-                "published": "July, 05 2016 00:00:00",
-                "country": "",
-                "relevance": 1,
-                "pestle": "Industries",
-                "source": "Foreign Policy",
-                "title": "The continued fallout from Brexit could keep oil prices lower for longer.",
-                "likelihood": 2
-            },
-            {
-                "end_year": "",
-                "intensity": 4,
-                "sector": "Energy",
-                "topic": "oil",
-                "insight": "U.S. has more untapped oil than Saudi Arabia or Russia",
-                "url": "http://money.cnn.com/2016/07/05/investing/us-untapped-oil/index.html",
-                "region": "Northern America",
-                "start_year": "",
-                "impact": "",
-                "added": "July, 06 2016 01:26:08",
-                "published": "July, 05 2016 00:00:00",
-                "country": "United States of America",
-                "relevance": 2,
-                "pestle": "Industries",
-                "source": "CNNMoney",
-                "title": "The U.S. could shoulder even more of the weight of global oil production in the future.",
-                "likelihood": 2
-            },
-            {
-                "end_year": "",
-                "intensity": "",
-                "sector": "Energy",
-                "topic": "oil",
-                "insight": "Nomura's Kwan Sees Big Data Among Game Changers in Oil, Gas Industry",
-                "url": "http://www.rigzone.com/news/oil_gas/a/145268/Nomuras_Kwan_Sees_Big_Data_Among_Game_Changers_in_Oil_Gas_Industry/?all=HG2",
-                "region": "",
-                "start_year": 2016,
-                "impact": "",
-                "added": "July, 05 2016 02:16:13",
-                "published": "June, 28 2016 00:00:00",
-                "country": "",
-                "relevance": 5,
-                "pestle": "Environmental",
-                "source": "Rigzone",
-                "title": "Exploration in deepwater and ultra-deepwater is not expected anytime soon despite signs that oil prices could reach $70 per barrel by end of 2016.",
-                "likelihood": ""
-            },
-            {
-                "end_year": "",
-                "intensity": 2,
-                "sector": "Energy",
-                "topic": "gas",
-                "insight": "Nomura's Kwan Sees Big Data Among Game Changers in Oil, Gas Industry",
-                "url": "http://www.rigzone.com/news/oil_gas/a/145268/Nomuras_Kwan_Sees_Big_Data_Among_Game_Changers_in_Oil_Gas_Industry/?all=HG2",
-                "region": "",
-                "start_year": "",
-                "impact": "",
-                "added": "July, 05 2016 02:16:13",
-                "published": "June, 28 2016 00:00:00",
-                "country": "",
-                "relevance": 1,
-                "pestle": "Social",
-                "source": "Rigzone",
-                "title": "Robots are being deployed in refineries and natural gas pipelines to investigate problems, toxic spills, oil spills or managing risk in hazardous areas.",
-                "likelihood": 2
-            },
-            {
-                "end_year": "",
-                "intensity": 2,
-                "sector": "",
-                "topic": "",
-                "insight": "Biogas buses are the green solution for cities",
-                "url": "http://euinmyregion.blogactiv.eu/2016/07/04/biogas-buses-are-the-green-solution-for-cities/",
-                "region": "Eastern Europe",
-                "start_year": "",
-                "impact": "",
-                "added": "July, 05 2016 00:55:08",
-                "published": "July, 04 2016 00:00:00",
-                "country": "Poland",
-                "relevance": 1,
-                "pestle": "",
-                "source": "Europe in My Region",
-                "title": "Combustion of methane in buses could significantly improve air quality (especially in Poland).",
-                "likelihood": 2
-            },
-            {
-                "end_year": "",
-                "intensity": 2,
-                "sector": "Energy",
-                "topic": "oil",
-                "insight": "Supergelators Could Make for More Effective Oil Spill Cleanup",
-                "url": "http://insights.globalspec.com/article/2880/supergelators-could-make-for-more-effective-oil-spill-cleanup?from_rss=1",
-                "region": "",
-                "start_year": "",
-                "impact": "",
-                "added": "July, 04 2016 02:06:29",
-                "published": "June, 30 2016 00:00:00",
-                "country": "",
-                "relevance": 1,
-                "pestle": "Environmental",
-                "source": "IHS Engineering 360",
-                "title": "Newly developed supergelators could help clean oil spills more efficiently and avoid the secondary pollution associated with some alternative cleanup methods.",
-                "likelihood": 2
-            },
-            {
-                "end_year": "",
-                "intensity": 3,
-                "sector": "Energy",
-                "topic": "oil",
-                "insight": "Advances in energy-storage technology, burgeoning electric car market driving lithium and graphite uptake",
-                "url": "http://www.engineeringnews.co.za/article/advances-in-energy-storage-technology-burgeoning-electric-car-market-driving-lithium-and-graphite-uptake-2016-07-01",
-                "region": "",
-                "start_year": "",
-                "impact": "",
-                "added": "July, 04 2016 01:36:39",
-                "published": "July, 01 2016 00:00:00",
-                "country": "",
-                "relevance": 1,
-                "pestle": "Economic",
-                "source": "Engineering News",
-                "title": "The low price of oil is leading to questions about the projected high demand for EV sales.",
-                "likelihood": 3
-            },
-            {
-                "end_year": "",
-                "intensity": 2,
-                "sector": "Financial services",
-                "topic": "oil",
-                "insight": "Global oil demand to slow in 2016: IEA",
-                "url": "http://www.cnbc.com/2015/07/10/global-oil-demand-to-slow-in-2016-iea.html",
-                "region": "",
-                "start_year": "",
-                "impact": "",
-                "added": "July, 03 2016 06:00:29",
-                "published": "July, 10 2015 00:00:00",
-                "country": "",
-                "relevance": 1,
-                "pestle": "Economic",
-                "source": "CNBC ",
-                "title": "A possible Greek exit from European Monetary Union (euro zone) could dampen not only Greek oil product demand, but also potentially curb deliveries across the continent if macro-economic activity were to weaken.",
-                "likelihood": 2
-            },
-            {
-                "end_year": 2016,
-                "intensity": "",
-                "sector": "Manufacturing",
-                "topic": "growth",
-                "insight": "IEA Says Oil Prices May Fall Even Further Before Supply Fades in 2016",
-                "url": "http://www.bloomberg.com/news/articles/2015-07-10/iea-says-oil-price-may-fall-further-before-supply-fades-in-2016",
-                "region": "Northern America",
-                "start_year": "",
-                "impact": "",
-                "added": "July, 03 2016 06:00:25",
-                "published": "July, 10 2015 00:00:00",
-                "country": "United States of America",
-                "relevance": 4,
-                "pestle": "Economic",
-                "source": "Bloomberg Business",
-                "title": "U.S. production growth will slow to 300,000 barrels day next year from 900,000 a day in 2015.",
-                "likelihood": ""
-            },
-            {
-                "end_year": "",
-                "intensity": 16,
-                "sector": "",
-                "topic": "growth",
-                "insight": "IEA Says Oil Prices May Fall Even Further Before Supply Fades in 2016",
-                "url": "http://www.bloomberg.com/news/articles/2015-07-10/iea-says-oil-price-may-fall-further-before-supply-fades-in-2016",
-                "region": "",
-                "start_year": 2016,
-                "impact": "",
-                "added": "July, 03 2016 06:00:25",
-                "published": "July, 10 2015 00:00:00",
-                "country": "",
-                "relevance": 4,
-                "pestle": "Economic",
-                "source": "Bloomberg Business",
-                "title": "Non-OPEC supply growth is expected to grind to a halt in 2016.",
-                "likelihood": 4
-            },
-            {
-                "end_year": 2016,
-                "intensity": 3,
-                "sector": "Retail",
-                "topic": "export",
-                "insight": "IEA Says Oil Prices May Fall Even Further Before Supply Fades in 2016",
-                "url": "http://www.bloomberg.com/news/articles/2015-07-10/iea-says-oil-price-may-fall-further-before-supply-fades-in-2016",
-                "region": "",
-                "start_year": "",
-                "impact": "",
-                "added": "July, 03 2016 06:00:23",
-                "published": "July, 10 2015 00:00:00",
-                "country": "",
-                "relevance": 1,
-                "pestle": "Economic",
-                "source": "Bloomberg Business",
-                "title": "There will be no overall production growth outside the Organization of Petroleum Exporting Countries next year for the first time since 2008.",
-                "likelihood": 3
-            },
-            {
-                "end_year": "",
-                "intensity": 2,
-                "sector": "",
-                "topic": "",
-                "insight": "Greenhouse gas",
-                "url": "https://en.wikipedia.org/wiki/Greenhouse_gas",
-                "region": "World",
-                "start_year": "",
-                "impact": "",
-                "added": "July, 03 2016 05:28:48",
-                "published": "July, 03 2016 00:00:00",
-                "country": "",
-                "relevance": 1,
-                "pestle": "",
-                "source": "Wikipedia",
-                "title": "Earth's surface temperature could exceed historical values as early as 2047.",
-                "likelihood": 2
-            }
-        ]
         const svgRef = useRef();
         const [dimensions, setDimensions] = useState({ width: 800, height: 800, radius: 400 });
         const [filteredData, setFilteredData] = useState([]);
         const [value,setValue]=useState("intensity");
         const [details,setDetails]=useState({})
+        const [currentIndex,setCurrentIndex]=useState(0);
+        const[dataChunk,setDataChunk]=useState(data.slice(0,10));
         const [filters, setFilters] = useState({
           end_year: '',
           topic: '',
@@ -331,7 +48,7 @@ import { useEffect, useRef, useState } from "react";
             .attr('transform', `translate(${width / 2},${height / 2})`)
             
             const pies = g.selectAll('.arc')
-            .data(pie(filteredData))
+            .data(pie(dataChunk))
             .enter()
             .append('g')
             .attr('class', 'arc');
@@ -369,7 +86,7 @@ import { useEffect, useRef, useState } from "react";
             .style("border-radius", "5px")
             .style("pointer-events", "none");
       
-        }, [filteredData, dimensions,value]);
+        }, [dataChunk,dimensions,value]);
       
         useEffect(() => {
           // Apply filters
@@ -385,6 +102,9 @@ import { useEffect, useRef, useState } from "react";
             );
           });
           setFilteredData(filtered);
+          console.log(dataChunk.length);
+          setDataChunk(filtered.slice(0,dataChunk.length))
+          setCurrentIndex(10);
         }, [filters]);
       
         const handleFilterChange = (e) => {
@@ -403,6 +123,24 @@ import { useEffect, useRef, useState } from "react";
         const changeValue=(event)=>{
            // console.log(event.target.value);
             setValue(event.target.value)
+        }
+        const changeData=(val)=>{
+            //console.log(filteredData)
+            console.log(dataChunk.length)
+            let data
+            if(val==11)
+            {
+                const newIndex=currentIndex+10;  
+                console.log(newIndex)              
+                data=filteredData.slice(currentIndex,newIndex);
+            }
+            else{
+                data=filteredData.slice(0,val);  
+            } 
+            
+       
+        setDataChunk(data);
+        
         }
       
         return (
@@ -430,14 +168,14 @@ import { useEffect, useRef, useState } from "react";
 
             <div className="m-10  space-x-2"> 
                 
-            <button onClick={()=>changeData()} className=" m-1 px-7 py-3 bg-blue-600 text-white rounded">10</button>
-            <button onClick={()=>changeData()} className=" m-1 px-7 py-3 bg-blue-600 text-white rounded">100</button>
-            <button onClick={()=>changeData()} className=" m-1 px-7 py-3 bg-blue-600 text-white rounded">500</button>
-            <button onClick={()=>changeData()} className=" m-1 px-7 py-3 bg-blue-600 text-white rounded">1000</button>
+            <button onClick={()=>changeData(10)} className=" m-1 px-7 py-3 bg-blue-600 text-white rounded">10</button>
+            <button onClick={()=>changeData(100)} className=" m-1 px-7 py-3 bg-blue-600 text-white rounded">100</button>
+            <button onClick={()=>changeData(500)} className=" m-1 px-7 py-3 bg-blue-600 text-white rounded">500</button>
+            <button onClick={()=>changeData(1000)} className=" m-1 px-7 py-3 bg-blue-600 text-white rounded">1000</button>
                
            
            
-           <button onClick={()=>changeData()} className=" px-9 py-6 bg-green-600 text-white rounded">Next</button>
+           <button onClick={()=>changeData(11)} className=" px-9 py-6 bg-green-600 text-white rounded">Next</button>
            
             
             </div>
@@ -550,7 +288,6 @@ import { useEffect, useRef, useState } from "react";
   </div>
 </div>
 
-         
           </div>
         );
       }
