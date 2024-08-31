@@ -15,7 +15,7 @@ export default function PieChart() {
       const screenHeight=window.innerHeight;
 
       const newWidth=screenWidth<800?screenWidth-200:800;
-      const newHeight=screenWidth<800?newWidth:800;
+      const newHeight=newWidth;
       const newRadius=newWidth/2;
       setDimensions({width:newWidth,height:newHeight,radius:newRadius});
     };
@@ -29,8 +29,9 @@ useEffect(()=>{
       const val=response.data;
       console.log(val);
       setData(val);
-      setFilteredData(val)
+      
       setDataChunk(data.slice(0, 10));
+      setFilteredData(val)
       
      
     }
@@ -42,6 +43,8 @@ useEffect(()=>{
 },[]);
 
     const [filteredData, setFilteredData] = useState([]);
+    const[suggestions,setSuggestion]=useState({});
+
     const [value, setValue] = useState("intensity");
     const [details, setDetails] = useState({});
     const [highest,setHighest]=useState();
@@ -57,9 +60,14 @@ useEffect(()=>{
         source: '',
         country: ''
     });
+    
 
             // adjust screen size 
             useEffect(()=>{
+              const keys=Object.keys(filters);
+              const initialSuggestions = keys.reduce((acc, key) => ({ ...acc, [key]: [] }), {});
+               setSuggestion(initialSuggestions);
+
               handleResize();
               window.addEventListener('resize', handleResize);
               return () => window.removeEventListener('resize', handleResize);
@@ -69,7 +77,8 @@ useEffect(()=>{
       setDetails(dataChunk[0]);
           const max=dataChunk.map(d=>d[value]);
              setHighest(Math.max(...max));
-             setLowest(Math.min(...max));
+          const min=dataChunk.map(d=>d[value]);
+             setLowest(Math.min(...min));
 //creating svg
         const svg = d3.select(svgRef.current);
         const { width, height, radius } = dimensions;
@@ -129,7 +138,9 @@ tooltip = d3.select("body").append("div")
     }, [dataChunk, dimensions, value]);
 
     useEffect(() => {
-        const filtered = data.filter(item => {
+    
+      
+      const filtered = data.filter(item => {
             return (
                 (filters.end_year === '' || item.end_year.toString() === filters.end_year) &&
                 (filters.topic === '' || item.topic === filters.topic) &&
@@ -151,7 +162,23 @@ tooltip = d3.select("body").append("div")
             ...filters,
             [name]: value
         });
+
+        const uniqueSuggestion=Array.from(new Set(
+          data.map(item=>item[name])
+          .filter(val=>val.toLowerCase().startsWith(value.toString().toLowerCase()))
+        )).sort();
+        setSuggestion(prev=>({...prev,[name]:uniqueSuggestion}))
+
+        
     };
+
+    const handleSuggestion=(key,value)=>{
+      console.log(key);
+      console.log(value);
+      setFilters(prev=>({...prev,[key]:value}))
+      setSuggestion(prev=>({...prev,[key]:[]}));
+      
+    }
 //set Zoom out zin feature
     const changeSize = (val) => {
         setDimensions(prev => {
@@ -262,6 +289,21 @@ tooltip = d3.select("body").append("div")
       placeholder="End Year"
       className="p-3 m-2 border border-gray-700 rounded-2xl bg-gray-800 text-white shadow-inner"
     />
+    <div className="mt-2">
+      {filters["end_year"]&&(
+        <ul className="border border-gray-300 rounded">
+          {suggestions["end_year"].map((suggestion,index)=>(
+            <li
+              key={index}
+              onClick={()=>handleSuggestion("end_year",suggestion)}
+              className="p-2 cursor-pointer hover:bg-gray-200"
+              >
+                {suggestion}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
     <input
       type="text"
       name="topic"
@@ -270,6 +312,21 @@ tooltip = d3.select("body").append("div")
       placeholder="Topic"
       className="p-3 m-2 border border-gray-700 rounded-2xl bg-gray-800 text-white shadow-inner"
     />
+     <div className="mt-2">
+      {filters["topic"]&&(
+        <ul className="border border-gray-300 rounded">
+          {suggestions["topic"].map((suggestion,index)=>(
+            <li
+              key={index}
+              onClick={()=>handleSuggestion("topic",suggestion)}
+              className="p-2 cursor-pointer hover:bg-gray-200"
+              >
+                {suggestion}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
     <input
       type="text"
       name="sector"
@@ -278,6 +335,21 @@ tooltip = d3.select("body").append("div")
       placeholder="Sector"
       className="p-3 m-2 border border-gray-700 rounded-2xl bg-gray-800 text-white shadow-inner"
     />
+     <div className="mt-2">
+      {filters["sector"]&&(
+        <ul className="border border-gray-300 rounded">
+          {suggestions["sector"].map((suggestion,index)=>(
+            <li
+              key={index}
+              onClick={()=>handleSuggestion("sector",suggestion)}
+              className="p-2 cursor-pointer hover:bg-gray-200"
+              >
+                {suggestion}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
     <input
       type="text"
       name="region"
@@ -286,6 +358,21 @@ tooltip = d3.select("body").append("div")
       placeholder="Region"
       className="p-3 m-2 border border-gray-700 rounded-2xl bg-gray-800 text-white shadow-inner"
     />
+     <div className="mt-2">
+      {filters["region"]&&(
+        <ul className="border border-gray-300 rounded">
+          {suggestions["region"].map((suggestion,index)=>(
+            <li
+              key={index}
+              onClick={()=>handleSuggestion("region",suggestion)}
+              className="p-2 cursor-pointer hover:bg-gray-200"
+              >
+                {suggestion}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
     <input
       type="text"
       name="pestle"
@@ -294,6 +381,21 @@ tooltip = d3.select("body").append("div")
       placeholder="PESTLE"
       className="p-3 m-2 border border-gray-700 rounded-2xl bg-gray-800 text-white shadow-inner"
     />
+     <div className="mt-2">
+      {filters["pestle"]&&(
+        <ul className="border border-gray-300 rounded">
+          {suggestions["pestle"].map((suggestion,index)=>(
+            <li
+              key={index}
+              onClick={()=>handleSuggestion("pestle",suggestion)}
+              className="p-2 cursor-pointer hover:bg-gray-200"
+              >
+                {suggestion}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
     <input
       type="text"
       name="source"
@@ -302,6 +404,21 @@ tooltip = d3.select("body").append("div")
       placeholder="Source"
       className="p-3 m-2 border border-gray-700 rounded-2xl bg-gray-800 text-white shadow-inner"
     />
+     <div className="mt-2">
+      {filters["source"]&&(
+        <ul className="border border-gray-300 rounded">
+          {suggestions["source"].map((suggestion,index)=>(
+            <li
+              key={index}
+              onClick={()=>handleSuggestion("source",suggestion)}
+              className="p-2 cursor-pointer hover:bg-gray-200"
+              >
+                {suggestion}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
     <input
       type="text"
       name="country"
@@ -310,6 +427,21 @@ tooltip = d3.select("body").append("div")
       placeholder="Country"
       className="p-3 m-2 border border-gray-700 rounded-2xl bg-gray-800 text-white shadow-inner"
     />
+     <div className="mt-2">
+      {filters["country"]&&(
+        <ul className="border border-gray-300 rounded">
+          {suggestions["country"].map((suggestion,index)=>(
+            <li
+              key={index}
+              onClick={()=>handleSuggestion("end_year",suggestion)}
+              className="p-2 cursor-pointer hover:bg-gray-200"
+              >
+                {suggestion}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   </div>
 
   <div className="p-6 max-w-lg mx-auto bg-gray-800 rounded-xl shadow-2xl space-y-4">
