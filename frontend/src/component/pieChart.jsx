@@ -5,8 +5,33 @@ import axios from "axios";
 //import data from "../jsonFile/jsondata.json";
 
 export default function PieChart() {
-
   const [data, setData] = useState([]);
+  const [dataChunk, setDataChunk] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+
+     //fetch data from backend
+useEffect(()=>{
+  const fetchData=async()=>{
+    try{
+      const response=await axios.get('https://vaibhav-singh-wasserstoff.onrender.com/api/energy/');
+    
+      const val=response.data;
+     // console.log(val);
+      setData(val);
+      
+      setDataChunk(val.slice(0, 10));
+      setFilteredData(val)
+      
+     
+    }
+    catch(error){
+      console.error("Error fetching data: ", error);
+    }
+  }
+  fetchData();
+},[]);
+
+  
     const svgRef = useRef();
     const [dimensions, setDimensions] = useState({ width: 800, height: 800, radius: 400 });
     //make mboile responsiveness
@@ -20,29 +45,9 @@ export default function PieChart() {
       setDimensions({width:newWidth,height:newHeight,radius:newRadius});
     };
 
-    //fetch data from backend
-useEffect(()=>{
-  const fetchData=async()=>{
-    try{
-      const response=await axios.get('https://vaibhav-singh-wasserstoff.onrender.com/api/energy/');
-    
-      const val=response.data;
-      console.log(val);
-      setData(val);
-      
-      setDataChunk(data.slice(0, 10));
-      setFilteredData(val)
-      
-     
-    }
-    catch(error){
-      console.error("Error fetching data: ", error);
-    }
-  }
-  fetchData();
-},[]);
+ 
 
-    const [filteredData, setFilteredData] = useState([]);
+    
     const[suggestions,setSuggestion]=useState({});
 
     const [value, setValue] = useState("intensity");
@@ -50,7 +55,7 @@ useEffect(()=>{
     const [highest,setHighest]=useState();
     const [lowest,setLowest]=useState();
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [dataChunk, setDataChunk] = useState(data.slice(0, 10));
+    
     const [filters, setFilters] = useState({
         end_year: '',
         topic: '',
@@ -60,6 +65,7 @@ useEffect(()=>{
         source: '',
         country: ''
     });
+    
     
 
             // adjust screen size 
@@ -404,16 +410,16 @@ tooltip = d3.select("body").append("div")
       placeholder="Source"
       className="p-3 m-2 border border-gray-700 rounded-2xl bg-gray-800 text-white shadow-inner"
     />
-     <div className="mt-2">
-      {filters["source"]&&(
+    <div className="mt-2">
+      {filters["source"] && (
         <ul className="border border-gray-300 rounded">
-          {suggestions["source"].map((suggestion,index)=>(
+          {suggestions["source"].map((suggestion, index) => (
             <li
               key={index}
-              onClick={()=>handleSuggestion("source",suggestion)}
+              onClick={() => handleSuggestion("source", suggestion)}
               className="p-2 cursor-pointer hover:bg-gray-200"
-              >
-                {suggestion}
+            >
+              {suggestion}
             </li>
           ))}
         </ul>
@@ -427,22 +433,23 @@ tooltip = d3.select("body").append("div")
       placeholder="Country"
       className="p-3 m-2 border border-gray-700 rounded-2xl bg-gray-800 text-white shadow-inner"
     />
-     <div className="mt-2">
-      {filters["country"]&&(
+    <div className="mt-2">
+      {filters["country"] && (
         <ul className="border border-gray-300 rounded">
-          {suggestions["country"].map((suggestion,index)=>(
+          {suggestions["country"].map((suggestion, index) => (
             <li
               key={index}
-              onClick={()=>handleSuggestion("end_year",suggestion)}
+              onClick={() => handleSuggestion("country", suggestion)}
               className="p-2 cursor-pointer hover:bg-gray-200"
-              >
-                {suggestion}
+            >
+              {suggestion}
             </li>
           ))}
         </ul>
       )}
     </div>
   </div>
+
 
   <div className="p-6 max-w-lg mx-auto bg-gray-800 rounded-xl shadow-2xl space-y-4">
                 <h2 className="text-xl font-bold mb-4">Details:</h2>
